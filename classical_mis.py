@@ -1,16 +1,6 @@
 from math import inf
+from utils import int_to_binary, have_common_bit
 
-# Change a number to its binary string version
-def int_to_binary(n, size=0):
-    if n == 0:
-        return '0'.rjust(size, '0')
-    
-    binary = ''
-    while n > 0:
-        binary = str(n % 2) + binary
-        n = n // 2
-        
-    return binary.rjust(size, '0')
 
 # calculate the cost of a specific configuration
 def cost_function(bit_string, length, adj_list):
@@ -25,14 +15,6 @@ def cost_function(bit_string, length, adj_list):
                 cost += 2 * int(bit_string[i]) * int(bit_string[j])
                 
     return cost
-
-def have_common_bit(bit_string1, bit_string2):
-    # Convert bitstrings to integers
-    num1 = int(bit_string1, 2)
-    num2 = int(bit_string2, 2)
-    
-    # Check if the result of the AND operation is not zero
-    return (num1 & num2) != 0
 
 # return the cost function and the minimal cost configuration
 def combinatorial_optimization_MIS(adj_list, actual_vertices, vertices, colored_edges):
