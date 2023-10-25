@@ -26,7 +26,7 @@ def combinatorial_optimization_MIS(adj_list, actual_vertices, vertices, colored_
             cost_list.append(inf)
             continue
         cost_list.append(cost_function(number, vertices, adj_list))
-    return int_to_binary(cost_list.index(min(cost_list)), vertices) #PROBLEMS?
+    return int_to_binary(cost_list.index(min(cost_list)), vertices)
 
 # Removes all relationships that involve the specified edge.
 def remove_edges(new_adjacent_list, index):

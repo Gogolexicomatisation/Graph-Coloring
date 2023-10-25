@@ -1,6 +1,5 @@
 import math
 from graph import Graph
-from step2 import adjacent_list
 
 # Models the antenna frequency problem using an adjacency list and a specified number of vertices, 
 # which are then input to the graph coloring function in step 2.
@@ -33,6 +32,6 @@ antennas = [antenna_1, antenna_2, antenna_3, antenna_4, antenna_5, antenna_6, an
 
 adjacent_list = model_antenna_frequency(antennas)[0]
 
-graph = Graph(len(antennas))
-graph.add_adjacency_list(adjacent_list)
-graph.visualize()
+# graph = Graph(len(antennas))
+# graph.add_adjacency_list(adjacent_list)
+# graph.visualize()
