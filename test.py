@@ -4,36 +4,56 @@ from pprint import pprint
 from pulser import Pulse, Sequence, Register
 from pulser.devices import Chadoq2
 from pulser.waveforms import RampWaveform, BlackmanWaveform
+from pulser_simulation import QutipEmulator
+import networkx as nx
 
-L = 4
-square = np.array([[i, j] for i in range(L) for j in range(L)], dtype=float)
-square -= np.mean(square, axis=0)
-square *= 5
 
-qubits = dict(enumerate(square))
-reg = Register(qubits)
+def mis_hamiltonian(graph):
+    # This is a simplified version. In a real-world scenario, you'd need to consider
+    # the specific interactions and energy levels of the Rydberg atoms.
+    H = np.zeros((2**len(graph.nodes), 2**len(graph.nodes)))
+    for edge in graph.edges:
+        i, j = edge
+        # Penalize if both i and j are in the excited state
+        H[2**i + 2**j, 2**i + 2**j] += 1
+    return H
 
-reg1 = Register(qubits)  # Copy of 'reg' to keep the original intact
+def rescale_layout(layout, scale_factor):
+    """Rescale the coordinates of a layout."""
+    return {node: (x*scale_factor, y*scale_factor) for node, (x, y) in layout.items()}
 
+
+G = nx.Graph()
+G.add_edges_from([(0, 1), (1, 2), (2, 3), (3, 4)])
+layout = nx.spring_layout(G)
+scaled_layout = rescale_layout(layout, 10)
+
+# Create a register from the rescaled layout
+reg = Register({f'q{i}': scaled_layout[i] for i in G.nodes()})
+
+# Create a sequence
 seq = Sequence(reg, Chadoq2)
-seq.declare_channel("ch1", "rydberg_local")
 
-print("\nAvailable channels after declaring 'ch1':")
-pprint(seq.declared_channels)
+rydberg_radius = 5 # TO MODIFY
+seq.declare_channel('ryd', 'rydberg_global', initial_target=rydberg_radius)
 
-seq.target(1, "ch1")
-simple_pulse = Pulse.ConstantPulse(200, 2, -10, 0)
-seq.add(simple_pulse, "ch1")
-seq.delay(100, "ch1")
+# Define a π-pulse
+duration = 1000  # Typical: ~1 µsec
+pi_pulse = Pulse.ConstantDetuning(BlackmanWaveform(duration, np.pi), 0.0, 0.0)
 
-duration = 1000
-amp_wf = BlackmanWaveform(duration, np.pi / 2)  # Duration: 1000 ns, Area: pi/2
-detuning_wf = RampWaveform(
-    duration, -20, 20
-)  # Duration: 1000ns, linear sweep from -20 to 20 rad/µs
+# Add the π-pulse to the sequence
+seq.add(pi_pulse, 'ryd')
 
-#amp_wf.draw()
+sim = QutipEmulator.from_sequence(seq)
+results = sim.run()
 
-amp_wf.integral  # dimensionless
-complex_pulse = Pulse(amp_wf, detuning_wf, phase=0)
-complex_pulse.draw()
+final_state = results.states[-1]
+probabilities = np.abs(final_state.data.toarray())**2
+
+# Extract the most probable state
+most_probable_state = np.argmax(probabilities)
+binary_representation = format(most_probable_state, f'0{len(G.nodes)}b')
+
+# Nodes in the MIS are those corresponding to bits set to 1
+mis = [i for i, bit in enumerate(binary_representation) if bit == '1']
+print("Maximum Independent Set:", mis)
