@@ -63,20 +63,3 @@ def graph_coloring(adj_list, vertices):
     last_mis_bit_string = combinatorial_optimization_MIS(adj_list, actual_vertices, vertices, colored_edges)
     color_list.append(last_mis_bit_string)
     return color_list
-
-
-# Example
-
-# adjacent_list = [(1,2), (2,3)]
-# vert = 3
-
-# adjacent_list = [(1,2), (2,3), (2,4), (3,4), (1, 3)]
-# vert = 4
-
-adjacent_list = [(1,2), (2,3), (2,4), (4,5), (4,6), (5,6), (4,7), (7,8), (7,9), (7,10), (8,9)]
-vert = 10
-
-graph = Graph(vert)
-graph.add_adjacency_list(adjacent_list)
-graph.color_graph(graph_coloring(adjacent_list, vert))
-graph.visualize()
