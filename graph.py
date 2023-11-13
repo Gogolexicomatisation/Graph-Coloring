@@ -17,7 +17,7 @@ class Graph:
             self.add_edge(node1, node2)
     
     def color_graph(self, bit_strings):
-        color_palette = ['red', 'green', 'yellow', 'purple', 'orange', 'cyan', 'magenta', 'lime', 'pink', 'teal', 'lavender', 'brown', 'beige', 'gray']
+        color_palette = ['blue','orange', 'green', 'pink', 'purple', 'red', 'cyan', 'magenta', 'lime', 'lavender', 'teal', 'brown', 'beige', 'gray']
         for idx, bit_string in enumerate(bit_strings):
             for i, bit in enumerate(bit_string):
                 if bit == '1':
@@ -31,6 +31,6 @@ class Graph:
             for neighbor in neighbors:
                 G.add_edge(node, neighbor)
 
-        node_colors = [self.colors.get(node, 'blue') for node in G.nodes()]
+        node_colors = [self.colors.get(node, 'lavender') for node in G.nodes()]
         nx.draw(G, with_labels=True, node_size=2000, node_color=node_colors, font_size=20, width=2, edge_color="gray")
         plt.show()

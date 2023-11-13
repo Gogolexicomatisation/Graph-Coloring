@@ -47,8 +47,10 @@ def pulser_MIS(antennas_coordinates, distance, active_qubits=None):
     results=sim.run()
     
     # Extract the most probable state
-    most_probable_state = str(max(results.sample_final_state(1000)))
-    binary_representation = most_probable_state.zfill(len(active_coords))
+    state_counts = results.sample_final_state(1000)
+    most_probable_state = max(state_counts, key=state_counts.get)
+    most_probable_state_str = str(most_probable_state)
+    binary_representation = most_probable_state_str.zfill(len(active_coords))
 
     # Nodes in the MIS are those corresponding to bits set to 1
     mis = []
