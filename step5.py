@@ -70,12 +70,12 @@ def realistic_pulser_MIS(antennas_coordinates, distance, active_qubits=None):
     build_sequence = sequence.build(qubits=qubit_dictionnary)
     
     
-    # Add SPAM and Doppler shift noise
+    # Add SPAM, Doppler shift and laser waist noise
     sim = QutipEmulator.from_sequence(
         build_sequence,
         sampling_rate=0.05,
         config=SimConfig(
-            noise=("SPAM", "doppler"),
+            noise=("SPAM", "doppler", "amplitude"),
             runs=10,
             # probability of atoms to be badly prepared
             eta=0.01,
@@ -83,16 +83,12 @@ def realistic_pulser_MIS(antennas_coordinates, distance, active_qubits=None):
             epsilon=0.02,
             # probability of false negatives
             epsilon_prime=0.1,
-            # same laser_waist as the real device
+            # default laser waist value
             laser_waist=175,
-            # mimic some effect of fluctuations of the laser_waist
-            amp_sigma=0.2,
+            # temperature increase to emphasize the effect of doppler shift
+            temperature=3000,
         ),
     )
-    
-    # print("\n")
-    # print(sim.show_config())
-    # print("\n")
     
     # Run simulation
     results = sim.run()
